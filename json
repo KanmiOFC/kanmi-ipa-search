@@ -1,0 +1,14 @@
+{
+  "name": "Kanmi Repo",
+  "developer": "Kanmi",
+  "apps": [
+    {
+      "name": "TikTok++",
+      "bundleId": "com.tiktok.plusplus",
+      "version": "22.5",
+      "downloadUrl": "https://yourrepo.com/tiktok++.ipa",
+      "icon": "https://yourrepo.com/tiktok.png",
+      "description": "Enhanced TikTok with extra features."
+    }
+  ]
+}

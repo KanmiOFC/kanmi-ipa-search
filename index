@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kanmi IPA Meta Search</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Kanmi IPA Meta Search</h1>
+      <p>Search across all your IPA repos in one place.</p>
+    </header>
+
+    <section class="search-section">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search app name or bundle ID..."
+        autocomplete="off"
+      />
+    </section>
+
+    <section class="results-section">
+      <div id="results"></div>
+    </section>
+
+    <footer>
+      <p>Sources managed via <code>repos.json</code> &amp; <code>data.json</code>.</p>
+    </footer>
+  </div>
+
+  <script src="search.js"></script>
+</body>
+</html>

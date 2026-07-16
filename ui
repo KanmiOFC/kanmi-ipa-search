@@ -1,0 +1,65 @@
+import SwiftUI
+
+struct ContentView: View {
+    @StateObject var repoManager = RepoManager()
+    @State private var newRepoURL = ""
+    @State private var searchText = ""
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Add repo
+                HStack {
+                    TextField("Enter repo URL", text: $newRepoURL)
+                        .textFieldStyle(.roundedBorder)
+                    Button("Add") {
+                        repoManager.addRepo(url: newRepoURL)
+                        newRepoURL = ""
+                    }
+                }
+                .padding()
+
+                // Search bar
+                TextField("Search apps...", text: $searchText)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
+
+                // App list
+                List {
+                    ForEach(
+                        searchText.isEmpty
+                        ? repoManager.allApps
+                        : repoManager.search(searchText)
+                    ) { app in
+                        AppRow(app: app)
+                    }
+                }
+            }
+            .navigationTitle("Kanmi IPA Hub")
+        }
+    }
+}
+
+struct AppRow: View {
+    let app: IPAApp
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(app.name).font(.headline)
+                Text(app.bundleId).font(.caption).foregroundColor(.gray)
+                Text("v\(app.version)").font(.caption2).foregroundColor(.purple)
+            }
+            Spacer()
+            Button("Download") {
+                downloadIPA(app.downloadUrl)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}
+
+func downloadIPA(_ url: String) {
+    guard let downloadURL = URL(string: url) else { return }
+    UIApplication.shared.open(downloadURL)
+}

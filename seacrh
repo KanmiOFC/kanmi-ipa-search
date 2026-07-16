@@ -1,0 +1,114 @@
+let apps = [];
+
+async function loadData() {
+  try {
+    const res = await fetch('data.json');
+    const json = await res.json();
+    apps = json.apps || [];
+    renderResults(apps);
+  } catch (e) {
+    console.error('Failed to load data.json', e);
+    const results = document.getElementById('results');
+    results.innerHTML = `
+      <div class="result-card">
+        <div class="result-header">
+          <span class="result-name">Error loading data.json</span>
+        </div>
+        <div class="result-meta">
+          Make sure <code>data.json</code> is in the same folder and valid JSON.
+        </div>
+      </div>
+    `;
+  }
+}
+
+function renderResults(list) {
+  const results = document.getElementById('results');
+  if (!list.length) {
+    results.innerHTML = `
+      <div class="result-card">
+        <div class="result-meta">
+          No apps found. Try a different search or add entries to <code>data.json</code>.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  results.innerHTML = '';
+  list.forEach(app => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    const header = document.createElement('div');
+    header.className = 'result-header';
+
+    const name = document.createElement('span');
+    name.className = 'result-name';
+    name.textContent = app.name || 'Unknown App';
+
+    const version = document.createElement('span');
+    version.className = 'result-version';
+    version.textContent = app.version ? `v${app.version}` : '';
+
+    header.appendChild(name);
+    header.appendChild(version);
+
+    const meta = document.createElement('div');
+    meta.className = 'result-meta';
+    meta.textContent = `${app.bundleId || 'No bundle ID'} • Source: ${app.repo || 'Unknown repo'}`;
+
+    const actions = document.createElement('div');
+    actions.className = 'result-actions';
+
+    if (app.downloadUrl) {
+      const downloadBtn = document.createElement('a');
+      downloadBtn.className = 'btn btn-download';
+      downloadBtn.href = app.downloadUrl;
+      downloadBtn.target = '_blank';
+      downloadBtn.rel = 'noopener noreferrer';
+      downloadBtn.textContent = 'Download IPA';
+      actions.appendChild(downloadBtn);
+    }
+
+    if (app.repo) {
+      const repoBtn = document.createElement('a');
+      repoBtn.className = 'btn btn-repo';
+      repoBtn.href = app.repo;
+      repoBtn.target = '_blank';
+      repoBtn.rel = 'noopener noreferrer';
+      repoBtn.textContent = 'Open Repo';
+      actions.appendChild(repoBtn);
+    }
+
+    card.appendChild(header);
+    card.appendChild(meta);
+    card.appendChild(actions);
+
+    results.appendChild(card);
+  });
+}
+
+function setupSearch() {
+  const input = document.getElementById('searchInput');
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) {
+      renderResults(apps);
+      return;
+    }
+
+    const filtered = apps.filter(app => {
+      const name = (app.name || '').toLowerCase();
+      const bundle = (app.bundleId || '').toLowerCase();
+      return name.includes(q) || bundle.includes(q);
+    });
+
+    renderResults(filtered);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  setupSearch();
+});

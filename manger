@@ -1,0 +1,37 @@
+import Foundation
+
+class RepoManager: ObservableObject {
+    @Published var repoLinks: [String] = []
+    @Published var allApps: [IPAApp] = []
+
+    func addRepo(url: String) {
+        guard !url.isEmpty else { return }
+        repoLinks.append(url)
+        fetchRepo(url)
+    }
+
+    func fetchRepo(_ url: String) {
+        guard let repoURL = URL(string: url) else { return }
+
+        URLSession.shared.dataTask(with: repoURL) { data, _, _ in
+            guard let data = data else { return }
+
+            do {
+                let repo = try JSONDecoder().decode(Repo.self, from: data)
+                DispatchQueue.main.async {
+                    self.allApps.append(contentsOf: repo.apps)
+                }
+            } catch {
+                print("Invalid repo format for \(url)")
+            }
+        }.resume()
+    }
+
+    func search(_ query: String) -> [IPAApp] {
+        let q = query.lowercased()
+        return allApps.filter { app in
+            app.name.lowercased().contains(q) ||
+            app.bundleId.lowercased().contains(q)
+        }
+    }
+}

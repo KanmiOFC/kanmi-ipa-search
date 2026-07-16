@@ -1,0 +1,15 @@
+struct IPAApp: Codable, Identifiable {
+    let id = UUID()
+    let name: String
+    let bundleId: String
+    let version: String
+    let downloadUrl: String
+    let icon: String?
+    let description: String?
+}
+
+struct Repo: Codable {
+    let name: String
+    let developer: String
+    let apps: [IPAApp]
+}
